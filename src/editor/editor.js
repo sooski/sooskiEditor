@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import ReactQuill from 'react-quill';
+import ReactQuill, {Quill}  from 'react-quill';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -8,39 +8,52 @@ import 'react-quill/dist/quill.snow.css';
 
 
 export default function Editor() {
+
+  
+
     var EMPTY_DELTA = {ops: []};
     const modules = {
       toolbar: [
-        [{ 'font': [] }, { 'size': [] }],
-          [ 'bold', 'italic', 'underline', 'strike' ],
-          [{ 'color': [] }, { 'background': [] }],
-          [{ 'script': 'super' }, { 'script': 'sub' }],
-          [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block' ],
-          [{ 'list': 'ordered' }, { 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' }],
-          [ 'direction', { 'align': [] }],
-          [ 'link', 'image', 'video', 'formula' ],
+        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+        ['blockquote', 'code-block'],
+
+        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+        [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+        [{ 'direction': 'rtl' }],                         // text direction
+
+        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+        [{ 'font': [] }],
+        [{ 'align': [] }],
         ['clean']
       ],
     }
-  
-    const formats = [
-      'header',
-      'bold', 'italic', 'underline', 'strike', 'blockquote',
-      'list', 'bullet', 'indent',
-      'link', 'image'
-    ]
+    
+    console.log(Quill.imports)
+    let Direction = Quill.import('formats/direction');
+    Direction.blotName  = 'direction'
+    Direction.tagName = 'rtl'
 
+    Quill.register(Direction, true);
+  
+  
     const [theme, settheme] = useState('snow')
     const [enabled, setenabled] = useState(true)
     const [readOnly, setreadOnly] = useState(false)  
     const [value, setvalue] = useState(EMPTY_DELTA)
     const [event, setevent] = useState([])
     const [selection, setselection] = useState()
+    const [code, setcode] = useState('')
 
 
 
    const onEditorChange = (value, delta, source, editor) => {
         setvalue(editor.getContents())
+        setcode(editor.getHTML())
         setevent([`[${source}] text-change`, ...event])
         console.log(value)
         console.log(editor)
@@ -105,7 +118,7 @@ export default function Editor() {
         {renderToolbar()}
         </Row>
         <Row>
-          <Col lg={9} className="overflow-hidden">
+          <Col lg={9} className="overflow-hidden" className="">
             <ReactQuill
               theme={theme}
               value={value}
@@ -115,7 +128,8 @@ export default function Editor() {
               onFocus={onEditorFocus}
               onBlur={onEditorBlur}
               modules={modules}
-              formats={formats}
+              
+              placeholder="همچی امادست تا شاهکارت رو خلق کنی"
             />
           </Col>
           <Col lg={3}>
@@ -158,9 +172,11 @@ export default function Editor() {
           <div style={{ overflow:'hidden', float:'right' }}>
             <textarea
               style={{ display:'block', width:300, height:300 }}
-              value={JSON.stringify(value, null, 2)}
+              value={code}
               readOnly={true}
             />
+            
+            
             {/* <textarea
               style={{ display:'block', width:300, height:300 }}
               value={event.join('\n')}
