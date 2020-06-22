@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import ReactQuill from 'react-quill';
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 import 'react-quill/dist/quill.snow.css';
 
 
@@ -19,15 +22,19 @@ export default function Editor() {
    const onEditorChange = (value, delta, source, editor) => {
         setvalue(editor.getContents())
         setevent([`[${source}] text-change`, ...event])
+        console.log(value)
+        console.log(editor)
+        console.log(editor.getHTML())
+        console.log(editor.getText())
         
       }
     
     
       let onEditorChangeSelection = (range, source) => {
-       console.log(range)
-       console.log(selection)
-       console.log(source)
-       console.log('-------------')
+      //  console.log(range)
+      //  console.log(selection)
+      //  console.log(source)
+      //  console.log('-------------')
   
             setselection(range)
              setevent([`[${source}] selection-change(${formatRange(selection)} -> ${formatRange(range)})`, ...event])
@@ -73,20 +80,28 @@ export default function Editor() {
       }
 
     return (
-        <div>
+      <Container fluid>
+        <Row lg={8}>
         {renderToolbar()}
-        <hr/>
-        {renderSidebar()}
-        {enabled && <ReactQuill
-          theme={theme}
-          value={value}
-          readOnly={readOnly}
-          onChange={onEditorChange}
-          onChangeSelection={onEditorChangeSelection}
-          onFocus={onEditorFocus}
-          onBlur={onEditorBlur}
-        />}
-      </div>
+        </Row>
+        <Row>
+          <Col lg={9} className="overflow-hidden">
+            <ReactQuill
+              theme={theme}
+              value={value}
+              readOnly={readOnly}
+              onChange={onEditorChange}
+              onChangeSelection={onEditorChangeSelection}
+              onFocus={onEditorFocus}
+              onBlur={onEditorBlur}
+            />
+          </Col>
+          <Col lg={3}>
+            {renderSidebar()}
+          </Col>
+        </Row>
+      </Container>
+        
     )
 
 
@@ -124,11 +139,11 @@ export default function Editor() {
               value={JSON.stringify(value, null, 2)}
               readOnly={true}
             />
-            <textarea
+            {/* <textarea
               style={{ display:'block', width:300, height:300 }}
               value={event.join('\n')}
               readOnly={true}
-            />
+            /> */}
           </div>
         );
       }
