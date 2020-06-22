@@ -32,13 +32,7 @@ export default function Editor() {
         ['clean']
       ],
     }
-    
-    console.log(Quill.imports)
-    let Direction = Quill.import('formats/direction');
-    Direction.blotName  = 'direction'
-    Direction.tagName = 'rtl'
 
-    Quill.register(Direction, true);
   
   
     const [theme, settheme] = useState('snow')

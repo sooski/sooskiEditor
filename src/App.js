@@ -1,6 +1,7 @@
 import React from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom'
 import Editor from './editor/editor'
+import PureEditor from './editor/pureEditor'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -11,6 +12,7 @@ function App() {
     
       <Switch>
         <Route exact  path="/" component={Editor}/>   
+        <Route exact  path="/p" component={PureEditor}/>   
       </Switch>
     </BrowserRouter>
   );
