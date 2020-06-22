@@ -5,17 +5,136 @@ import 'react-quill/dist/quill.snow.css';
 
 
 export default function Editor() {
+    var EMPTY_DELTA = {ops: []};
+
+    const [theme, settheme] = useState('snow')
+    const [enabled, setenabled] = useState(true)
+    const [readOnly, setreadOnly] = useState(false)  
+    const [value, setvalue] = useState(EMPTY_DELTA)
+    const [event, setevent] = useState([])
+    const [selection, setselection] = useState()
 
 
 
-    const [value, setValue] = useState('');
-
-    useEffect(() => {
-        console.log(value)
-    }, [value])
-
+   const onEditorChange = (value, delta, source, editor) => {
+        setvalue(editor.getContents())
+        setevent([`[${source}] text-change`, ...event])
+        
+      }
+    
+    
+      let onEditorChangeSelection = (range, source) => {
+       console.log(range)
+       console.log(selection)
+       console.log(source)
+       console.log('-------------')
+  
+            setselection(range)
+             setevent([`[${source}] selection-change(${formatRange(selection)} -> ${formatRange(range)})`, ...event])
+            
+        
+          
+        
+      }
+    
+      const onEditorFocus = (range, source) => {
+        setevent([`[${source}] focus(${formatRange(range)})`].concat(event))
+    
+      }
+    
+      const onEditorBlur = (previousRange, source) => {
+        setevent([`[${source}] blur(${formatRange(previousRange)})`].concat(event))
+        
+      }
+    
+      const onToggle = () => {
+        setenabled(!enabled)
+      }
+    
+      const onToggleReadOnly = () => {
+        setreadOnly(!readOnly)
+        
+      }
+    
+      const onSetContents = () => {
+        setvalue('This is some <b>fine</b> example content')
+       
+      }
+    
+    
+    
+      const formatRange = (range) => {
+    
+        if(range)
+            return [range.index, range.index + range.length].join(',')
+             
+        return 'none'
+    
+      }
 
     return (
-        <ReactQuill theme="snow" value={value} onChange={setValue}/>
+        <div>
+        {renderToolbar()}
+        <hr/>
+        {renderSidebar()}
+        {enabled && <ReactQuill
+          theme={theme}
+          value={value}
+          readOnly={readOnly}
+          onChange={onEditorChange}
+          onChangeSelection={onEditorChangeSelection}
+          onFocus={onEditorFocus}
+          onBlur={onEditorBlur}
+        />}
+      </div>
     )
-}
+
+
+
+
+   function  renderToolbar() {
+       
+        var enabled = enabled;
+        var readOnly = readOnly;
+        var selection = formatRange(selection);
+        return (
+          <div>
+            <button onClick={onToggle}>
+              {enabled? 'Disable' : 'Enable'}
+            </button>
+            <button onClick={onToggleReadOnly}>
+              Set {readOnly? 'read/Write' : 'read-only'}
+            </button>
+            <button onClick={onSetContents}>
+              Fill contents programmatically
+            </button>
+            <button disabled={true}>
+              Selection: ({selection})
+            </button>
+          </div>
+        );
+      }
+    
+     function  renderSidebar() {
+        
+        return (
+          <div style={{ overflow:'hidden', float:'right' }}>
+            <textarea
+              style={{ display:'block', width:300, height:300 }}
+              value={JSON.stringify(value, null, 2)}
+              readOnly={true}
+            />
+            <textarea
+              style={{ display:'block', width:300, height:300 }}
+              value={event.join('\n')}
+              readOnly={true}
+            />
+          </div>
+        );
+      }
+    
+    }
+
+
+
+
