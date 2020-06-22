@@ -9,6 +9,26 @@ import 'react-quill/dist/quill.snow.css';
 
 export default function Editor() {
     var EMPTY_DELTA = {ops: []};
+    const modules = {
+      toolbar: [
+        [{ 'font': [] }, { 'size': [] }],
+          [ 'bold', 'italic', 'underline', 'strike' ],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'script': 'super' }, { 'script': 'sub' }],
+          [{ 'header': '1' }, { 'header': '2' }, 'blockquote', 'code-block' ],
+          [{ 'list': 'ordered' }, { 'list': 'bullet'}, { 'indent': '-1' }, { 'indent': '+1' }],
+          [ 'direction', { 'align': [] }],
+          [ 'link', 'image', 'video', 'formula' ],
+        ['clean']
+      ],
+    }
+  
+    const formats = [
+      'header',
+      'bold', 'italic', 'underline', 'strike', 'blockquote',
+      'list', 'bullet', 'indent',
+      'link', 'image'
+    ]
 
     const [theme, settheme] = useState('snow')
     const [enabled, setenabled] = useState(true)
@@ -94,6 +114,8 @@ export default function Editor() {
               onChangeSelection={onEditorChangeSelection}
               onFocus={onEditorFocus}
               onBlur={onEditorBlur}
+              modules={modules}
+              formats={formats}
             />
           </Col>
           <Col lg={3}>
